@@ -21,9 +21,10 @@ public interface AgilityCourseHandler
 	int MAX_DISTANCE = 2300;
 
 	WorldPoint getStartPoint();
+	WorldPoint getCenterPoint();
 	List<AgilityObstacleModel> getObstacles();
 
-	default TileObject getCurrentObstacle()
+	default TileObject 	getCurrentObstacle()
 	{
 		WorldPoint playerLocation = Microbot.getClient().getLocalPlayer().getWorldLocation();
 

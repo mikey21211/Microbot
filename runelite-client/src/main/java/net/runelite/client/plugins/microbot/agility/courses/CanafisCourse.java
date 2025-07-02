@@ -13,6 +13,12 @@ public class CanafisCourse implements AgilityCourseHandler
 		return new WorldPoint(3507, 3489, 0);
 	}
 
+	@Override //NEEDS FIXING **************************************
+	public WorldPoint getCenterPoint()
+	{
+		return new WorldPoint(3291, 3180, 0);
+	}
+
 	@Override
 	public List<AgilityObstacleModel> getObstacles()
 	{

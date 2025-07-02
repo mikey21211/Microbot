@@ -24,6 +24,7 @@ import net.runelite.client.plugins.microbot.util.grounditem.Rs2GroundItem;
 import net.runelite.client.plugins.microbot.util.inventory.Rs2Inventory;
 import net.runelite.client.plugins.microbot.util.inventory.Rs2ItemModel;
 import net.runelite.client.plugins.microbot.util.magic.Rs2Magic;
+import net.runelite.client.plugins.microbot.util.math.Rs2Random;
 import net.runelite.client.plugins.microbot.util.models.RS2Item;
 import net.runelite.client.plugins.microbot.util.player.Rs2Player;
 import net.runelite.client.plugins.microbot.util.walker.Rs2Walker;
@@ -36,6 +37,7 @@ public class AgilityScript extends Script
 	final MicroAgilityConfig config;
 
 	WorldPoint startPoint = null;
+	WorldPoint centerPoint = null;
 
 	@Inject
 	public AgilityScript(MicroAgilityPlugin plugin, MicroAgilityConfig config)
@@ -50,6 +52,7 @@ public class AgilityScript extends Script
 		Rs2Antiban.resetAntibanSettings();
 		Rs2Antiban.antibanSetupTemplates.applyAgilitySetup();
 		startPoint = plugin.getCourseHandler().getStartPoint();
+		centerPoint = plugin.getCourseHandler().getCenterPoint();
 		mainScheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(() -> {
 			try
 			{
@@ -121,6 +124,7 @@ public class AgilityScript extends Script
 				final int agilityExp = Microbot.getClient().getSkillExperience(Skill.AGILITY);
 
 				TileObject gameObject = plugin.getCourseHandler().getCurrentObstacle();
+				WorldPoint courseCenter = plugin.getCourseHandler().getCenterPoint();
 
 				if (gameObject == null)
 				{
@@ -131,6 +135,12 @@ public class AgilityScript extends Script
 				if (!Rs2Camera.isTileOnScreen(gameObject))
 				{
 					Rs2Walker.walkMiniMap(gameObject.getWorldLocation());
+				}
+
+				//Rotate the screen 40% of the time on the course
+				if(Rs2Random.dicePercentage(40))
+				{
+					rotateToTargetAngleWithJitter(courseCenter);
 				}
 
 				if (Rs2GameObject.interact(gameObject))
@@ -146,6 +156,32 @@ public class AgilityScript extends Script
 			}
 		}, 0, 100, TimeUnit.MILLISECONDS);
 		return true;
+	}
+
+	/**
+	 * Rotate the screen, centered on the center of the agility course or similar.
+	 *
+	 * @param target The center of the agility course
+	 */
+	public void rotateToTargetAngleWithJitter(WorldPoint target) {
+
+		// Calculate yaw (left/right)
+		int baseYaw = Rs2Camera.angleToTile(target);
+		Microbot.log("Base Yaw " + String.valueOf(baseYaw));
+		int correctedYaw = (baseYaw - 90 + 360) % 360;
+		Microbot.log("Corrected Yaw " + String.valueOf(correctedYaw));
+
+		// Add Gaussian overshoot/undershoot
+		int yawJitter = (int) Rs2Random.gaussRand(0, 30); // 60° std dev
+		Microbot.log("Yaw Jitter " + String.valueOf(yawJitter));
+		int targetYaw = (correctedYaw + yawJitter + 360) % 360;
+		Microbot.log("Target Yaw " + String.valueOf(targetYaw));
+
+		targetYaw = Math.max(0, Math.min(2048, targetYaw));
+		Microbot.log("Clamped Target Yaw " + String.valueOf(targetYaw));
+
+		// Rotate camera yaw
+		Rs2Camera.setAngle(targetYaw, 10); // 0° threshold for stopping
 	}
 
 	public void handleAlch()
@@ -278,4 +314,5 @@ public class AgilityScript extends Script
 		}
 		return true;
 	}
+
 }

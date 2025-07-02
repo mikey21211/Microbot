@@ -14,6 +14,12 @@ public class GnomeStrongholdCourse implements AgilityCourseHandler
 		return new WorldPoint(2474, 3436, 0);
 	}
 
+	@Override //NEEDS FIXING **************************************
+	public WorldPoint getCenterPoint()
+	{
+		return new WorldPoint(3291, 3180, 0);
+	}
+
 	@Override
 	public List<AgilityObstacleModel> getObstacles()
 	{
