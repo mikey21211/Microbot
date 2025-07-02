@@ -167,18 +167,18 @@ public class AgilityScript extends Script
 
 		// Calculate yaw (left/right)
 		int baseYaw = Rs2Camera.angleToTile(target);
-		Microbot.log("Base Yaw " + String.valueOf(baseYaw));
+		Microbot.log("Base Yaw " + (baseYaw));
 		int correctedYaw = (baseYaw - 90 + 360) % 360;
-		Microbot.log("Corrected Yaw " + String.valueOf(correctedYaw));
+		Microbot.log("Corrected Yaw " + (correctedYaw));
 
 		// Add Gaussian overshoot/undershoot
 		int yawJitter = (int) Rs2Random.gaussRand(0, 30); // 60° std dev
-		Microbot.log("Yaw Jitter " + String.valueOf(yawJitter));
+		Microbot.log("Yaw Jitter " + (yawJitter));
 		int targetYaw = (correctedYaw + yawJitter + 360) % 360;
-		Microbot.log("Target Yaw " + String.valueOf(targetYaw));
+		Microbot.log("Target Yaw " + (targetYaw));
 
 		targetYaw = Math.max(0, Math.min(2048, targetYaw));
-		Microbot.log("Clamped Target Yaw " + String.valueOf(targetYaw));
+		Microbot.log("Clamped Target Yaw " + (targetYaw));
 
 		// Rotate camera yaw
 		Rs2Camera.setAngle(targetYaw, 10); // 0° threshold for stopping
