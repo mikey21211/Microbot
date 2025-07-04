@@ -85,10 +85,10 @@ public class Rs2AntibanSettings {
     public static boolean nonLinearIntervals = false;
     public static boolean profileSwitching = false;
     public static boolean timeOfDayAdjust = false; //TODO: Implement this
-    public static boolean simulateMistakes = false; //Handled by the natural mouse
-    public static boolean naturalMouse = false;
-    public static boolean moveMouseOffScreen = false;
-    public static boolean moveMouseRandomly = false;
+    public static boolean simulateMistakes = true; //Handled by the natural mouse
+    public static boolean naturalMouse = true;
+    public static boolean moveMouseOffScreen = true;
+    public static boolean moveMouseRandomly = true;
     public static boolean contextualVariability = false;
     public static boolean dynamicIntensity = false;
     public static boolean dynamicActivity = false;
@@ -102,8 +102,8 @@ public class Rs2AntibanSettings {
     public static int microBreakDurationHigh = AntibanPlugin.MICRO_BREAK_DURATION_HIGH_DEFAULT; // 15 minutes
     public static double actionCooldownChance = 0.1; // 10% chance of activating the action cooldown by default
     public static double microBreakChance = 0.1; // 10% chance of taking a micro break by default
-    public static double moveMouseRandomlyChance = 0.1; // 10% chance of moving the mouse randomly by default
-    public static double moveMouseOffScreenChance = 0.1; // 10% chance of moving the mouse off screen by default
+    public static double moveMouseRandomlyChance = 0.64; // 10% chance of moving the mouse randomly by default
+    public static double moveMouseOffScreenChance = 0.76; // 10% chance of moving the mouse off screen by default
 
     // reset method to reset all settings to default values
     public static void reset() {

@@ -184,7 +184,7 @@ public class AntibanSetupTemplates {
         Rs2AntibanSettings.nonLinearIntervals = true;
         Rs2AntibanSettings.profileSwitching = true;
         Rs2AntibanSettings.timeOfDayAdjust = false;
-        Rs2AntibanSettings.simulateMistakes = false;
+        Rs2AntibanSettings.simulateMistakes = true;
         Rs2AntibanSettings.naturalMouse = true;
         Rs2AntibanSettings.contextualVariability = true;
         Rs2AntibanSettings.dynamicIntensity = false;
@@ -193,9 +193,9 @@ public class AntibanSetupTemplates {
         Rs2AntibanSettings.takeMicroBreaks = false;
         Rs2AntibanSettings.playSchedule = true;
         Rs2AntibanSettings.universalAntiban = false;
-        Rs2AntibanSettings.microBreakDurationLow = 3;
-        Rs2AntibanSettings.microBreakDurationHigh = 8;
-        Rs2AntibanSettings.actionCooldownChance = 0.2;
+        Rs2AntibanSettings.microBreakDurationLow = 1;
+        Rs2AntibanSettings.microBreakDurationHigh = 1;
+        Rs2AntibanSettings.actionCooldownChance = 0.13;
         Rs2AntibanSettings.microBreakChance = 0.05;
         Rs2Antiban.setActivity(Activity.GENERAL_AGILITY);
     }
