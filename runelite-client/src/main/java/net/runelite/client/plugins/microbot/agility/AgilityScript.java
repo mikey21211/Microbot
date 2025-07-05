@@ -24,6 +24,7 @@ import net.runelite.client.plugins.microbot.util.grounditem.Rs2GroundItem;
 import net.runelite.client.plugins.microbot.util.inventory.Rs2Inventory;
 import net.runelite.client.plugins.microbot.util.inventory.Rs2ItemModel;
 import net.runelite.client.plugins.microbot.util.magic.Rs2Magic;
+import net.runelite.client.plugins.microbot.util.math.Rs2Random;
 import net.runelite.client.plugins.microbot.util.models.RS2Item;
 import net.runelite.client.plugins.microbot.util.player.Rs2Player;
 import net.runelite.client.plugins.microbot.util.walker.Rs2Walker;
@@ -36,6 +37,10 @@ public class AgilityScript extends Script
 	final MicroAgilityConfig config;
 
 	WorldPoint startPoint = null;
+	WorldPoint centerPoint = null;
+
+	boolean animatingCameraChangedFlag;
+	boolean otherCameraChangedFlag;
 
 	@Inject
 	public AgilityScript(MicroAgilityPlugin plugin, MicroAgilityConfig config)
@@ -56,6 +61,10 @@ public class AgilityScript extends Script
 		Rs2Antiban.resetAntibanSettings();
 		Rs2Antiban.antibanSetupTemplates.applyAgilitySetup();
 		startPoint = plugin.getCourseHandler().getStartPoint();
+		centerPoint = plugin.getCourseHandler().getCenterPoint();
+		animatingCameraChangedFlag = false;
+		otherCameraChangedFlag = false;
+
 		mainScheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(() -> {
 			try
 			{
@@ -85,6 +94,7 @@ public class AgilityScript extends Script
 				}
 
 				final WorldPoint playerWorldLocation = Microbot.getClient().getLocalPlayer().getWorldLocation();
+				final WorldPoint courseCenter = plugin.getCourseHandler().getCenterPoint();
 
 				if (handleFood())
 				{
@@ -99,6 +109,24 @@ public class AgilityScript extends Script
 				{
 					if (Rs2Player.isMoving() || Rs2Player.isAnimating())
 					{
+						if(!animatingCameraChangedFlag)
+						{
+							//Chance to allow the camera change pitch/yaw.
+							//Rotate the screen based on random chance
+							if(Rs2Random.dicePercentage(3.23))
+							{
+								rotateToTargetAngleWithJitter(courseCenter);
+								Microbot.log("Changed Yaw During Animation!");
+								animatingCameraChangedFlag = true;
+							}
+							//Change the screen height based on random chance
+							if(Rs2Random.dicePercentage(1.06))
+							{
+								rotateCameraPitchWithJitter();
+								Microbot.log("Changed Pitch During Animation!");
+								animatingCameraChangedFlag = true;
+							}
+						}
 						return;
 					}
 				}
@@ -108,10 +136,7 @@ public class AgilityScript extends Script
 					return;
 				}
 
-				if (config.alchemy())
-				{
-					getAlchItem().ifPresent(item -> Rs2Magic.alch(item, 50, 75));
-				}
+				//getAlchItem().ifPresent(item -> Rs2Magic.alch(item, 50, 75));
 
 				if (plugin.getCourseHandler() instanceof PrifddinasCourse)
 				{
@@ -140,13 +165,34 @@ public class AgilityScript extends Script
 
 				if (gameObject == null)
 				{
-					Microbot.log("No agility obstacle found. Report this as a bug if this keeps happening.");
+					//Microbot.log("No agility obstacle found. Report this as a bug if this keeps happening.");
 					return;
 				}
 
 				if (!Rs2Camera.isTileOnScreen(gameObject))
 				{
 					Rs2Walker.walkMiniMap(gameObject.getWorldLocation());
+					//If tile is not on the screen, high chance to rotate
+					if(Rs2Random.dicePercentage(47)) { rotateToTargetAngleWithJitter(gameObject.getWorldLocation());
+						Microbot.log("Changed yaw because tile not on screen.");}
+				}
+
+				//Random rotation again, and also prevent using again until next obstacle has been encountered.
+				if(!otherCameraChangedFlag)
+				{
+					//Chance to allow the camera change pitch/yaw.
+					//Rotate the screen based on random chance
+					if(Rs2Random.dicePercentage(1.27)) {
+						rotateToTargetAngleWithJitter(courseCenter);
+						Microbot.log("Random yaw change");
+						otherCameraChangedFlag = true;
+					}
+					//Change the screen height based on random chance
+					if(Rs2Random.dicePercentage(0.41)) {
+						rotateCameraPitchWithJitter();
+						Microbot.log("Random pitch change");
+						otherCameraChangedFlag = true;
+					}
 				}
 
 				if (Rs2GameObject.interact(gameObject))
@@ -154,6 +200,10 @@ public class AgilityScript extends Script
 					plugin.getCourseHandler().waitForCompletion(agilityExp, Microbot.getClient().getLocalPlayer().getWorldLocation().getPlane());
 					Rs2Antiban.actionCooldown();
 					Rs2Antiban.takeMicroBreakByChance();
+
+					//Reset flags, allow yaw/pitch to be changed again
+					animatingCameraChangedFlag = false;
+					otherCameraChangedFlag = false;
 				}
 			}
 			catch (Exception ex)
@@ -249,7 +299,7 @@ public class AgilityScript extends Script
 		{
 			return false;
 		}
-		if (Rs2Player.getBoostedSkillLevel(Skill.AGILITY) > plugin.getCourseHandler().getRequiredLevel())
+		if (Rs2Player.getBoostedSkillLevel(Skill.AGILITY) >= plugin.getCourseHandler().getRequiredLevel())
 		{
 			return false;
 		}
@@ -268,5 +318,41 @@ public class AgilityScript extends Script
 			Rs2Inventory.dropAll(ItemID.PIEDISH);
 		}
 		return true;
+	}
+
+	/**
+	 * Rotate the screen, centered on the center of the agility course or similar.
+	 *
+	 * @param target The center of the agility course
+	 */
+	public void rotateToTargetAngleWithJitter(WorldPoint target) {
+
+		// Calculate yaw (left/right)
+		int baseYaw = Rs2Camera.angleToTile(target);
+		int correctedYaw = (baseYaw - 90 + 360) % 360;
+
+		// Add Gaussian overshoot/undershoot
+		int yawJitter = (int) Rs2Random.gaussRand(0, 30); // 60° std dev
+		int targetYaw = (correctedYaw + yawJitter + 360) % 360;
+
+		//Clamp target yaw
+		targetYaw = Math.max(0, Math.min(2048, targetYaw));
+
+		// Rotate camera yaw
+		Rs2Camera.setAngle(targetYaw, 10); // 0° threshold for stopping
+	}
+
+	/**
+	 * Rotate the screen pitch, with randomness.
+	 */
+	public void rotateCameraPitchWithJitter() {
+
+		// Calculate random pitch
+		int rawPitch = (int) Rs2Random.gaussRand(266, 38);
+		int clampedPitch = Math.max(128, Math.min(383, rawPitch));
+		float percentage = (float) (clampedPitch - 128) / (383 - 128);
+
+		//Rotate camera pitch
+		Rs2Camera.adjustPitch(percentage);
 	}
 }

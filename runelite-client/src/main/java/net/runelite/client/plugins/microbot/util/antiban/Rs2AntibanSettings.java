@@ -1,5 +1,7 @@
 package net.runelite.client.plugins.microbot.util.antiban;
 
+import net.runelite.client.plugins.microbot.util.math.Rs2Random;
+
 /**
  * Provides configuration settings for the anti-ban system used by various plugins within the bot framework.
  *

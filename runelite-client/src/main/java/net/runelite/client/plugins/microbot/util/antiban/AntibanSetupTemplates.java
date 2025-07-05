@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.microbot.util.antiban;
 
 import net.runelite.client.plugins.microbot.util.antiban.enums.Activity;
+import net.runelite.client.plugins.microbot.util.math.Rs2Random;
 
 /**
  * The {@code AntibanSetupTemplates} class provides predefined antiban setup configurations tailored to specific
@@ -184,19 +185,23 @@ public class AntibanSetupTemplates {
         Rs2AntibanSettings.nonLinearIntervals = true;
         Rs2AntibanSettings.profileSwitching = true;
         Rs2AntibanSettings.timeOfDayAdjust = false;
-        Rs2AntibanSettings.simulateMistakes = false;
+        Rs2AntibanSettings.simulateMistakes = true;
         Rs2AntibanSettings.naturalMouse = true;
+        Rs2AntibanSettings.moveMouseOffScreen = true;
+        Rs2AntibanSettings.moveMouseRandomly = true;
         Rs2AntibanSettings.contextualVariability = true;
         Rs2AntibanSettings.dynamicIntensity = false;
         Rs2AntibanSettings.dynamicActivity = false;
         Rs2AntibanSettings.devDebug = false;
-        Rs2AntibanSettings.takeMicroBreaks = false;
+        Rs2AntibanSettings.takeMicroBreaks = true;
         Rs2AntibanSettings.playSchedule = true;
         Rs2AntibanSettings.universalAntiban = false;
-        Rs2AntibanSettings.microBreakDurationLow = 3;
-        Rs2AntibanSettings.microBreakDurationHigh = 8;
-        Rs2AntibanSettings.actionCooldownChance = 0.2;
-        Rs2AntibanSettings.microBreakChance = 0.05;
+        Rs2AntibanSettings.microBreakDurationLow = 1;
+        Rs2AntibanSettings.microBreakDurationHigh = 1;
+        Rs2AntibanSettings.actionCooldownChance = 0.12;
+        Rs2AntibanSettings.microBreakChance = 0.01;
+        Rs2AntibanSettings.moveMouseRandomlyChance = Rs2Random.gaussRand(0.73, 0.095);
+        Rs2AntibanSettings.moveMouseOffScreenChance = Rs2Random.gaussRand(0.78, 0.05);
         Rs2Antiban.setActivity(Activity.GENERAL_AGILITY);
     }
 
