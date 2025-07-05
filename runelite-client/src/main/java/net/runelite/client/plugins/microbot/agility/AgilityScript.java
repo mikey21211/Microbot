@@ -137,10 +137,7 @@ public class AgilityScript extends Script
 					return;
 				}
 
-				if (config.alchemy())
-				{
-					getAlchItem().ifPresent(item -> Rs2Magic.alch(item, 50, 75));
-				}
+				//getAlchItem().ifPresent(item -> Rs2Magic.alch(item, 50, 75));
 
 				if (plugin.getCourseHandler() instanceof PrifddinasCourse)
 				{
@@ -324,7 +321,7 @@ public class AgilityScript extends Script
 		{
 			return false;
 		}
-		if (Rs2Player.getBoostedSkillLevel(Skill.AGILITY) > plugin.getCourseHandler().getRequiredLevel())
+		if (Rs2Player.getBoostedSkillLevel(Skill.AGILITY) >= plugin.getCourseHandler().getRequiredLevel())
 		{
 			return false;
 		}
