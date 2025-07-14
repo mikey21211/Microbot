@@ -249,6 +249,7 @@ public class AgilityScript extends Script
 	private boolean lootMarksOfGrace()
 	{
 		final List<RS2Item> marksOfGrace = AgilityPlugin.getMarksOfGrace();
+		final int lootDistance = plugin.getCourseHandler().getLootDistance();
 		if (!marksOfGrace.isEmpty() && !Rs2Inventory.isFull())
 		{
 			for (RS2Item markOfGraceTile : marksOfGrace)
@@ -257,7 +258,7 @@ public class AgilityScript extends Script
 				{
 					continue;
 				}
-				if (!Rs2GameObject.canReach(markOfGraceTile.getTile().getWorldLocation(), 1, 1, 1, 1))
+				if (!Rs2GameObject.canReach(markOfGraceTile.getTile().getWorldLocation(), lootDistance, lootDistance, lootDistance, lootDistance))
 				{
 					continue;
 				}

@@ -166,4 +166,8 @@ public interface AgilityCourseHandler
 		}
 		return false;
 	}
+
+	default int getLootDistance() {
+		return 1;
+	}
 }
