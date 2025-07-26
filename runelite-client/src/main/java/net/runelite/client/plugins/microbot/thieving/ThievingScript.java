@@ -40,7 +40,6 @@ public class ThievingScript extends Script {
         "Rogue trousers",
         "Rogue boots",
         "Rogue gloves"
-        //"Thieving cape(t)"
     );
 
     private static final Map<String, WorldPoint[]> VYRE_HOUSES = Map.of(
@@ -93,9 +92,11 @@ public class ThievingScript extends Script {
                         currentState = State.IDLE;
                         break;
                     case PICKPOCKET:
-                        if (Rs2Player.isStunned()) return;
+                        if (Rs2Player.isStunned()) {
+                            sleepUntil(() -> !Rs2Player.isStunned(), 8000);
+                            return;
+                        }
                         wearIfNot("dodgy necklace");
-                        openCoinPouches();
 
                         if (!autoEatAndDrop()) {
                             currentState = State.IDLE;
@@ -128,13 +129,13 @@ public class ThievingScript extends Script {
             } catch (Exception ex) {
                 Microbot.logStackTrace(getClass().getSimpleName(), ex);
             }
-        }, 0, 300, TimeUnit.MILLISECONDS);
+        }, 0, 600, TimeUnit.MILLISECONDS);
         return true;
     }
 
     private boolean hasReqs() {
         boolean hasFood = Rs2Inventory.getInventoryFood().size() >= config.foodAmount();
-        boolean hasDodgy = Rs2Inventory.hasItem("Dodgy necklace");
+        boolean hasDodgy = Rs2Inventory.hasItem("Dodgy necklace") || config.dodgyNecklaceAmount() == 0;
 
         if (config.shadowVeil()) {
             boolean hasCosmic = Rs2Inventory.hasItem("Cosmic rune");
@@ -156,7 +157,7 @@ public class ThievingScript extends Script {
 
         boolean inside = false;
         int px = point.getX(), py = point.getY();
-        
+
         for (int i = 0, j = n - 1; i < n; j = i++) {
             int xi = polygon[i].getX(), yi = polygon[i].getY();
             int xj = polygon[j].getX(), yj = polygon[j].getY();
@@ -185,6 +186,7 @@ public class ThievingScript extends Script {
     private void castShadowVeil() {
         if (!Rs2Magic.isShadowVeilActive() && Rs2Magic.canCast(MagicAction.SHADOW_VEIL)) {
             Rs2Magic.cast(MagicAction.SHADOW_VEIL);
+            sleep(600);
         }
     }
 
@@ -208,10 +210,12 @@ public class ThievingScript extends Script {
                 Rs2Player.waitForWalking();
             } else {
                 equipSet(ROGUE_SET);
-                if (config.shadowVeil()) castShadowVeil();
-                if (Rs2Npc.pickpocket(npc)) {
-                    Rs2Walker.setTarget(null);
-                    sleep(50, 200);
+                while (!Rs2Player.isStunned() & isRunning()) {
+					if (!Microbot.isLoggedIn()) break;
+                    openCoinPouches();
+                    if (config.shadowVeil()) castShadowVeil();
+                    if (!Rs2Npc.pickpocket(npc)) continue;
+                    sleep(200, 300);
                 }
             }
         }
@@ -225,12 +229,15 @@ public class ThievingScript extends Script {
     private boolean pickpocketHighlighted() {
         var highlighted = net.runelite.client.plugins.npchighlight.NpcIndicatorsPlugin.getHighlightedNpcs();
         if (highlighted.isEmpty()) return false;
-        if (config.shadowVeil()) castShadowVeil();
-        if (Rs2Npc.pickpocket(highlighted)) {
-            sleep(50, 200);
-            return true;
+        equipSet(ROGUE_SET);
+        while (!Rs2Player.isStunned() & isRunning()) {
+			if (!Microbot.isLoggedIn()) break;
+            openCoinPouches();
+            if (config.shadowVeil()) castShadowVeil();
+            if (!Rs2Npc.pickpocket(highlighted)) continue;
+            sleep(200, 300);
         }
-        return false;
+        return true;
     }
 
     private void pickpocketElves() {
@@ -369,9 +376,9 @@ public class ThievingScript extends Script {
         }
 
         if (config.shadowVeil()) {
-            List<String> runesShadowVeil = Arrays.asList("Earth rune", "Fire rune"); 
+            List<String> runesShadowVeil = Arrays.asList("Earth rune", "Fire rune");
             boolean banklavaStaff = Rs2Equipment.isWearing("Lava battlestaff") || Rs2Inventory.contains("Lava battlestaff") || Rs2Bank.hasItem("Lava battlestaff");
-            boolean bankrunes = Rs2Bank.hasItem(runesShadowVeil); 
+            boolean bankrunes = Rs2Bank.hasItem(runesShadowVeil);
             boolean bankcosmicRune = Rs2Bank.hasItem("Cosmic rune");
 
             if (!banklavaStaff && !bankrunes) {
