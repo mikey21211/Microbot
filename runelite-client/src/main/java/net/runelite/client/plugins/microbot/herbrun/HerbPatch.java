@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 @Getter
-public class HerbPatch {
+public class                    HerbPatch {
     private final FarmingPatch patch;
     private final String regionName;
     private final CropState prediction;

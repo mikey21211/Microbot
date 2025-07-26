@@ -9,20 +9,27 @@ import net.runelite.client.Notifier;
 import net.runelite.client.config.Notification;
 import net.runelite.client.plugins.microbot.Microbot;
 import net.runelite.client.plugins.microbot.Script;
+import net.runelite.client.plugins.microbot.bankjs.BanksBankStander.CurrentStatus;
 import net.runelite.client.plugins.microbot.birdhouseruns.FornBirdhouseRunsInfo.states;
 import net.runelite.client.plugins.microbot.util.Rs2InventorySetup;
 import net.runelite.client.plugins.microbot.util.bank.Rs2Bank;
 import net.runelite.client.plugins.microbot.util.gameobject.Rs2GameObject;
+import net.runelite.client.plugins.microbot.util.inventory.InteractOrder;
 import net.runelite.client.plugins.microbot.util.inventory.Rs2Inventory;
+import net.runelite.client.plugins.microbot.util.inventory.Rs2ItemModel;
+import net.runelite.client.plugins.microbot.util.math.Rs2Random;
 import net.runelite.client.plugins.microbot.util.player.Rs2Player;
 import net.runelite.client.plugins.microbot.util.walker.Rs2Walker;
 import net.runelite.client.plugins.microbot.util.widget.Rs2Widget;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static net.runelite.client.plugins.microbot.birdhouseruns.FornBirdhouseRunsInfo.*;
+import static net.runelite.client.plugins.microbot.util.inventory.Rs2Inventory.calculateInteractOrder;
 
 public class FornBirdhouseRunsScript extends Script {
     private static final WorldPoint birdhouseLocation1 = new WorldPoint(3763, 3755, 0);
@@ -35,6 +42,26 @@ public class FornBirdhouseRunsScript extends Script {
     private Notifier notifier;
     private final FornBirdhouseRunsPlugin plugin;
     private final FornBirdhouseRunsConfig config;
+
+    public static long previousItemChange;
+
+    public static CurrentStatus currentStatus = CurrentStatus.FETCH_SUPPLIES;
+
+    public static int itemsProcessed;
+
+    static Integer thirdItemId;
+    static Integer fourthItemId;
+
+
+    static Integer firstItemId;
+    public static Integer secondItemId;
+    private int sleepMin;
+    private int sleepMax;
+    private int sleepTarget;
+
+    public static boolean isWaitingForPrompt = false;
+    private long timeValue;
+    private int randomNum;
 
     @Inject
     FornBirdhouseRunsScript(FornBirdhouseRunsPlugin plugin, FornBirdhouseRunsConfig config) {
@@ -201,19 +228,92 @@ public class FornBirdhouseRunsScript extends Script {
     }
 
     private void buildBirdhouse(WorldPoint worldPoint, states status) {
-        if (!Rs2Inventory.hasItem("bird house") && Rs2Inventory.hasItem(ItemID.POH_CLOCKWORK_MECHANISM)) {
-            Rs2Inventory.use(ItemID.HAMMER);
-            Rs2Inventory.use(" logs");
+        if (!Rs2Inventory.hasItem("bird house") && Rs2Inventory.hasItem(ItemID.POH_CLOCKWORK_MECHANISM)
+                && Rs2Inventory.hasItem(" logs"))
+        {
+            //Rs2Inventory.use(ItemID.HAMMER);
+            //Rs2Inventory.use(" logs");
+            Rs2GameObject.interact(worldPoint, "Build");
             Rs2Inventory.waitForInventoryChanges(5000);
+            //sleepUntil(Rs2Player::isAnimating);
+            botStatus = status;
         }
-        Rs2GameObject.interact(worldPoint, "Build");
-        sleepUntil(Rs2Player::isAnimating);
-        botStatus = status;
     }
 
     private void dismantleBirdhouse(int itemId, states status) {
         Rs2GameObject.interact(itemId, "Empty");
         Rs2Player.waitForXpDrop(Skill.HUNTER);
         botStatus = status;
+    }
+
+    private void crushBirdNests() {
+        if(Rs2Inventory.contains(ItemID.PESTLE_AND_MORTAR) && Rs2Inventory.count(ItemID.PESTLE_AND_MORTAR) == 1)
+        {
+            Rs2ItemModel pestleMortar = Rs2Inventory.get(233);
+            Rs2Inventory.moveItemToSlot(pestleMortar, Rs2Inventory.getFirstEmptySlot());
+
+            //Random choice how to tackle inventory
+            InteractOrder interactOrderLocal;
+            int randomValue = Rs2Random.betweenInclusive(0, 5);
+            if (randomValue == 0) {
+                interactOrderLocal = InteractOrder.EFFICIENT_ROW;
+            } else if (randomValue == 1) {
+                interactOrderLocal = InteractOrder.COLUMN;
+            } else if (randomValue == 2) {
+                interactOrderLocal = InteractOrder.EFFICIENT_COLUMN;
+            } else if (randomValue == 3) {
+                interactOrderLocal = InteractOrder.ZIGZAG;
+            } else if (randomValue == 4) {
+                interactOrderLocal = InteractOrder.STANDARD;
+            } else { // Covers randomValue == 5 and any other unexpected values due to 'default' in original
+                interactOrderLocal = InteractOrder.RANDOM;
+            }
+
+            List<Rs2ItemModel> inventoryNests = calculateInteractOrder(Rs2Inventory.items(x -> x.getName().toLowerCase().contains("nest"))
+                    .collect(Collectors.toList()), interactOrderLocal);
+
+            // Interact with each slot in the specified order
+            for (Rs2ItemModel item : inventoryNests) {
+                if (item.getName().toLowerCase().contains("nest")) {
+
+                    //Set baseline time, click 'Use' on pestle and mortar
+                    timeValue = System.currentTimeMillis();
+                    Rs2Inventory.interact(ItemID.PESTLE_AND_MORTAR, "Use");
+                    randomNum = calculateSleepDuration(0.5);
+                    if (System.currentTimeMillis()-timeValue<randomNum)
+                    { sleep((int) (randomNum-(System.currentTimeMillis()-timeValue))); } else { sleep(Rs2Random.between(14, 28)); }
+
+                    //Set baseline time, click 'Use' on nests
+                    if (!inventoryNests.isEmpty()) {
+                        timeValue = System.currentTimeMillis();
+                        Rs2Inventory.interact(item, "Use");
+                        randomNum = calculateSleepDuration(0.5);
+                        if (System.currentTimeMillis()-timeValue<randomNum)
+                        { sleep((int) (randomNum-(System.currentTimeMillis()-timeValue))); } else { sleep(Rs2Random.between(14, 28)); }
+                    }
+                }
+            }
+        }
+    }
+
+    private int calculateSleepDuration(double multiplier) {
+        // Create a Random object
+        Random random = new Random();
+
+        // Calculate the mean (average) of sleepMin and sleepMax, adjusted by sleepTarget
+        double mean = (sleepMin + sleepMax + sleepTarget) / 3.0;
+
+        // Calculate the standard deviation with added noise
+        double noiseFactor = 0.2; // Adjust the noise factor as needed (0.0 to 1.0)
+        double stdDeviation = Math.abs(sleepTarget - mean) / 3.0 * (1 + noiseFactor * (random.nextDouble() - 0.5) * 2);
+
+        // Generate a random number following a normal distribution
+        int sleepDuration;
+        do {
+            // Generate a random number using nextGaussian method, scaled by standard deviation
+            sleepDuration = (int) Math.round(mean + random.nextGaussian() * stdDeviation);
+        } while (sleepDuration < sleepMin || sleepDuration > sleepMax); // Ensure the duration is within the specified range
+        if ((int) Math.round(sleepDuration * multiplier) < 60) sleepDuration += ((60-sleepDuration)+Rs2Random.between(11,44));
+        return sleepDuration;
     }
 }

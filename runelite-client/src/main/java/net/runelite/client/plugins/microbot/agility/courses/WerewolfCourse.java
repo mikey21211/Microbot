@@ -32,6 +32,12 @@ public class WerewolfCourse implements AgilityCourseHandler {
         return RESET_WORLD_POINT;
     }
 
+    @Override //NEEDS FIXING **************************************
+    public WorldPoint getCenterPoint()
+    {
+        return new WorldPoint(3291, 3180, 0);
+    }
+
     @Override
     public List<AgilityObstacleModel> getObstacles() {
         return List.of(
