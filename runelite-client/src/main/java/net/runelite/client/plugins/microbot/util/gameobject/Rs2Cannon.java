@@ -72,4 +72,16 @@ public class Rs2Cannon {
         return true;
     }
 
+    public static void pickUpCannon()
+    {
+        //Find cannon and if doesn't exist, exit
+        TileObject cannon = Rs2GameObject.findObject(new Integer[]{ObjectID.DWARF_MULTICANNON, ObjectID.DWARF_MULTICANNON_43027});
+        if (cannon == null) return;
+
+        Rs2GameObject.interact(cannon, "Pick-up");
+
+        //Wait for cannon to be picked up
+        sleep(2000);
+    }
+
 }

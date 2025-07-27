@@ -4,6 +4,8 @@ import lombok.SneakyThrows;
 import net.runelite.api.Actor;
 import net.runelite.api.gameval.ItemID;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.gameval.VarPlayerID;
+import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.microbot.Microbot;
 import net.runelite.client.plugins.microbot.Script;
 import net.runelite.client.plugins.microbot.aiofighter.AIOFighterConfig;
@@ -11,9 +13,11 @@ import net.runelite.client.plugins.microbot.aiofighter.AIOFighterPlugin;
 import net.runelite.client.plugins.microbot.aiofighter.enums.State;
 import net.runelite.client.plugins.microbot.shortestpath.ShortestPathPlugin;
 import net.runelite.client.plugins.microbot.util.ActorModel;
+import net.runelite.client.plugins.microbot.util.bank.Rs2Bank;
 import net.runelite.client.plugins.microbot.util.camera.Rs2Camera;
 import net.runelite.client.plugins.microbot.util.combat.Rs2Combat;
 import net.runelite.client.plugins.microbot.util.coords.Rs2WorldArea;
+import net.runelite.client.plugins.microbot.util.gameobject.Rs2Cannon;
 import net.runelite.client.plugins.microbot.util.inventory.Rs2Inventory;
 import net.runelite.client.plugins.microbot.util.npc.Rs2Npc;
 import net.runelite.client.plugins.microbot.util.npc.Rs2NpcManager;
@@ -123,6 +127,14 @@ public class AttackNpcScript extends Script {
             } catch (Exception ex) {
                 Microbot.logStackTrace(this.getClass().getSimpleName(), ex);
             }
+
+            /*if(Microbot.getClient().getVarpValue(VarPlayerID.SLAYER_COUNT) == 0)
+            {
+                Rs2Cannon.pickUpCannon();
+                Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint());
+                shutdown();
+            }*/
+
         }, 0, 600, TimeUnit.MILLISECONDS);
     }
 

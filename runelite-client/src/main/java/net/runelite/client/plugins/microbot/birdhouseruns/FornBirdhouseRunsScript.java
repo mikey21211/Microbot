@@ -167,6 +167,7 @@ public class FornBirdhouseRunsScript extends Script {
                         if (config.goToBank()) {
                             Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint());
                             emptyNests();
+                            crushBirdNests();
                             if (!Rs2Bank.isOpen()) Rs2Bank.openBank();
                             Rs2Bank.depositAll();
                         }
