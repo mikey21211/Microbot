@@ -66,6 +66,8 @@ public class TestScript extends Script {
                 long totalTime = endTime - startTime;
                 System.out.println("Total time for loop " + totalTime);
 
+                this.shutdown();
+
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
@@ -79,13 +81,13 @@ public class TestScript extends Script {
 
             //Get pestle/mortar and move to first open slot in inventory
             Rs2ItemModel pestleMortar = Rs2Inventory.get(ItemID.PESTLE_AND_MORTAR);
-            int emptySlot = Rs2Inventory.getFirstEmptySlot();
+            //int emptySlot = Rs2Inventory.getFirstEmptySlot();
 
-            if (pestleMortar != null && emptySlot != -1) {
+            /*if (pestleMortar != null && emptySlot != -1) {
                 Rs2Inventory.moveItemToSlot(pestleMortar, emptySlot);
             } else {
                 Microbot.log("Pestle and Mortar not found or no empty slot available.");
-            }
+            }*/
 
             //Random choice how to tackle inventory
             InteractOrder interactOrderLocal;
@@ -104,7 +106,7 @@ public class TestScript extends Script {
                 interactOrderLocal = InteractOrder.RANDOM;
             }
 
-            List<Rs2ItemModel> inventoryNests = calculateInteractOrder(Rs2Inventory.items(x -> x.getName().toLowerCase().contains("nest"))
+            List<Rs2ItemModel> inventoryNests = calculateInteractOrder(Rs2Inventory.items(x -> x.getName().toLowerCase().contains("bird"))
                     .collect(Collectors.toList()), interactOrderLocal);
 
             if (inventoryNests.isEmpty()) {

@@ -250,8 +250,16 @@ public class FornBirdhouseRunsScript extends Script {
     private void crushBirdNests() {
         if(Rs2Inventory.contains(ItemID.PESTLE_AND_MORTAR) && Rs2Inventory.count(ItemID.PESTLE_AND_MORTAR) == 1)
         {
-            Rs2ItemModel pestleMortar = Rs2Inventory.get(233);
-            Rs2Inventory.moveItemToSlot(pestleMortar, Rs2Inventory.getFirstEmptySlot());
+
+            //Get pestle/mortar and move to first open slot in inventory
+            Rs2ItemModel pestleMortar = Rs2Inventory.get(ItemID.PESTLE_AND_MORTAR);
+            //int emptySlot = Rs2Inventory.getFirstEmptySlot();
+
+            /*if (pestleMortar != null && emptySlot != -1) {
+                Rs2Inventory.moveItemToSlot(pestleMortar, emptySlot);
+            } else {
+                Microbot.log("Pestle and Mortar not found or no empty slot available.");
+            }*/
 
             //Random choice how to tackle inventory
             InteractOrder interactOrderLocal;
@@ -270,29 +278,37 @@ public class FornBirdhouseRunsScript extends Script {
                 interactOrderLocal = InteractOrder.RANDOM;
             }
 
-            List<Rs2ItemModel> inventoryNests = calculateInteractOrder(Rs2Inventory.items(x -> x.getName().toLowerCase().contains("nest"))
+            List<Rs2ItemModel> inventoryNests = calculateInteractOrder(Rs2Inventory.items(x -> x.getName().toLowerCase().contains("bird"))
                     .collect(Collectors.toList()), interactOrderLocal);
+
+            if (inventoryNests.isEmpty()) {
+                Microbot.log("No nests found in inventory.");
+                return;
+            }
 
             // Interact with each slot in the specified order
             for (Rs2ItemModel item : inventoryNests) {
-                if (item.getName().toLowerCase().contains("nest")) {
 
-                    //Set baseline time, click 'Use' on pestle and mortar
-                    timeValue = System.currentTimeMillis();
-                    Rs2Inventory.interact(ItemID.PESTLE_AND_MORTAR, "Use");
-                    randomNum = calculateSleepDuration(0.5);
-                    if (System.currentTimeMillis()-timeValue<randomNum)
-                    { sleep((int) (randomNum-(System.currentTimeMillis()-timeValue))); } else { sleep(Rs2Random.between(14, 28)); }
-
-                    //Set baseline time, click 'Use' on nests
-                    if (!inventoryNests.isEmpty()) {
-                        timeValue = System.currentTimeMillis();
-                        Rs2Inventory.interact(item, "Use");
-                        randomNum = calculateSleepDuration(0.5);
-                        if (System.currentTimeMillis()-timeValue<randomNum)
-                        { sleep((int) (randomNum-(System.currentTimeMillis()-timeValue))); } else { sleep(Rs2Random.between(14, 28)); }
-                    }
+                //Set baseline time, click 'Use' on pestle and mortar
+                timeValue = System.currentTimeMillis();
+                Rs2Inventory.interact(pestleMortar, "Use");
+                randomNum = calculateSleepDuration(0.5);
+                if (System.currentTimeMillis()-timeValue<randomNum)
+                {
+                    sleep((int) (randomNum-(System.currentTimeMillis()-timeValue)));
                 }
+                else { sleep(Rs2Random.between(14, 28)); }
+
+                //Set baseline time, click 'Use' on nests
+                timeValue = System.currentTimeMillis();
+                Rs2Inventory.interact(item, "Use");
+                randomNum = calculateSleepDuration(0.5);
+                if (System.currentTimeMillis()-timeValue<randomNum)
+                {
+                    sleep((int) (randomNum-(System.currentTimeMillis()-timeValue)));
+                }
+
+                else { sleep(Rs2Random.between(14, 28)); }
             }
         }
     }
