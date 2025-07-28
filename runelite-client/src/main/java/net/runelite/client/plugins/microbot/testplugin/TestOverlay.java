@@ -23,14 +23,14 @@ public class TestOverlay extends OverlayPanel {
         myButton.setPreferredSize(new Dimension(100, 30));
         myButton.setParentOverlay(this);
         myButton.setFont(FontManager.getRunescapeBoldFont());
-        myButton.setOnClick(() -> Microbot.openPopUp("Microbot", String.format("S-1D:<br><br><col=ffffff>%s Popup</col>", "Example")));
+        myButton.setOnClick(() -> Microbot.openPopUp("Microbot", String.format("S-1D:<br><br><col=ffffff>%s Popup</col>", "Test")));
     }
     @Override
     public Dimension render(Graphics2D graphics) {
         try {
             panelComponent.setPreferredSize(new Dimension(200, 300));
             panelComponent.getChildren().add(TitleComponent.builder()
-                    .text("Micro Example V1.0.0")
+                    .text("Micro Test ML V1.0.0")
                     .color(Color.GREEN)
                     .build());
 

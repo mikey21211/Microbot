@@ -13,9 +13,9 @@ import javax.inject.Inject;
 import java.awt.*;
 
 @PluginDescriptor(
-        name = PluginDescriptor.Default + "Example",
-        description = "Microbot example plugin",
-        tags = {"example", "microbot"},
+        name = PluginDescriptor.Default + "Test",
+        description = "Microbot test plugin ML",
+        tags = {"test", "microbot"},
         enabledByDefault = false
 )
 @Slf4j
@@ -30,25 +30,25 @@ public class TestPlugin extends Plugin {
     @Inject
     private OverlayManager overlayManager;
     @Inject
-    private TestOverlay exampleOverlay;
+    private TestOverlay testOverlay;
 
     @Inject
-    TestScript exampleScript;
+    TestScript testScript;
 
 
     @Override
     protected void startUp() throws AWTException {
         if (overlayManager != null) {
-            overlayManager.add(exampleOverlay);
-            exampleOverlay.myButton.hookMouseListener();
+            overlayManager.add(testOverlay);
+            testOverlay.myButton.hookMouseListener();
         }
-        exampleScript.run(config);
+        testScript.run(config);
     }
 
     protected void shutDown() {
-        exampleScript.shutdown();
-        overlayManager.remove(exampleOverlay);
-        exampleOverlay.myButton.unhookMouseListener();
+        testScript.shutdown();
+        overlayManager.remove(testOverlay);
+        testOverlay.myButton.unhookMouseListener();
     }
     int ticks = 10;
     @Subscribe
