@@ -128,12 +128,12 @@ public class AttackNpcScript extends Script {
                 Microbot.logStackTrace(this.getClass().getSimpleName(), ex);
             }
 
-            /*if(Microbot.getClient().getVarpValue(VarPlayerID.SLAYER_COUNT) == 0)
+            if(Microbot.getClient().getVarpValue(VarPlayerID.SLAYER_COUNT) < 1)
             {
                 Rs2Cannon.pickUpCannon();
                 Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint());
                 super.shutdown();
-            }*/
+            }
 
         }, 0, 600, TimeUnit.MILLISECONDS);
     }

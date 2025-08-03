@@ -42,6 +42,17 @@ public class Global {
         sleep(randomSleep);
     }
 
+    public static void clampedSleepGaussian(int clampedMean, int clampedDeviation) {
+
+        int min = Math.max(48, clampedMean - 3 * clampedDeviation); // Clamp lower bound (e.g. 110)
+        int max = clampedMean + 3 * clampedDeviation; // Clamp upper bound (e.g. 650)
+
+        int sleepTime = Rs2Random.randomGaussian(clampedMean, clampedDeviation);
+        sleepTime = Math.max(min, Math.min(max, sleepTime)); // Clamp between min and max
+
+        sleep(sleepTime);
+    }
+
     @SneakyThrows
     public static <T> T sleepUntilNotNull(Callable<T> method, int time) {
         if (Microbot.getClient().isClientThread()) return null;

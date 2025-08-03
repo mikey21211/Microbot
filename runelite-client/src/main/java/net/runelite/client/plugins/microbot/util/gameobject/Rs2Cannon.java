@@ -36,7 +36,7 @@ public class Rs2Cannon {
     }
 
     public static boolean refill() {
-        return refill(Rs2Random.between(10, 15));
+        return refill(Rs2Random.between(7, 17));
     }
 
     public static boolean refill(int cannonRefillAmount) {
@@ -80,8 +80,21 @@ public class Rs2Cannon {
 
         Rs2GameObject.interact(cannon, "Pick-up");
 
-        //Wait for cannon to be picked up
-        sleep(2000);
+        // Wait until cannon is gone (max ~5 seconds)
+        int attempts = 0;
+        while (isCannonNearby() && attempts++ < 10) {
+            sleep(1000);
+        }
+    }
+
+    private static boolean isCannonNearby() {
+        TileObject cannon = Rs2GameObject.findObject(new Integer[]{ObjectID.DWARF_MULTICANNON, ObjectID.DWARF_MULTICANNON_43027});
+        if (cannon != null)
+        {
+            Rs2GameObject.interact(cannon, "Pick-up");
+            return true;
+        }
+        return false;
     }
 
 }

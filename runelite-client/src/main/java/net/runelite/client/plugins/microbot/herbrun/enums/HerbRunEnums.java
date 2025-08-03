@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.microbot.farmTreeRun.enums;
+package net.runelite.client.plugins.microbot.herbrun.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,15 +8,12 @@ import net.runelite.client.plugins.microbot.util.player.Rs2Player;
 
 @Getter
 @RequiredArgsConstructor
-public enum HardTreeEnums {
-    TEAK("Teak sapling", ItemID.PLANTPOT_TEAK_SAPLING, ItemID.LIMPWURT_ROOT, 15,35),
-    MAHOGANY("Mahogany sapling", ItemID.PLANTPOT_MAHOGANY_SAPLING, ItemID.YANILLIAN_HOPS, 25,55);
-
+public enum HerbRunEnums {
+    RANARR_WEED("Ranarr Weed", ItemID.RANARR_WEED,32),
+    SNAPDRAGON("Snapdragon", ItemID.SNAPDRAGON,62);
 
     private final String name;
-    private final int saplingId;
-    private final int paymentId;
-    private final int paymentAmount;
+    private final int herbID;
     private final int farmingLevel;
 
     @Override

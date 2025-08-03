@@ -55,9 +55,6 @@ public class FornBirdhouseRunsScript extends Script {
 
     static Integer firstItemId;
     public static Integer secondItemId;
-    private int sleepMin;
-    private int sleepMax;
-    private int sleepTarget;
 
     public static boolean isWaitingForPrompt = false;
     private long timeValue;
@@ -167,6 +164,7 @@ public class FornBirdhouseRunsScript extends Script {
                         if (config.goToBank()) {
                             Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint());
                             emptyNests();
+                            clampedSleepGaussian(760, 222);
                             crushBirdNests();
                             if (!Rs2Bank.isOpen()) Rs2Bank.openBank();
                             Rs2Bank.depositAll();
@@ -248,12 +246,28 @@ public class FornBirdhouseRunsScript extends Script {
     }
 
     private void crushBirdNests() {
-        if(Rs2Inventory.contains(ItemID.PESTLE_AND_MORTAR) && Rs2Inventory.count(ItemID.PESTLE_AND_MORTAR) == 1)
+        if(Rs2Inventory.contains(ItemID.PESTLE_AND_MORTAR) && Rs2Inventory.contains(ItemID.BIRD_NEST_EMPTY) && Rs2Inventory.count(ItemID.PESTLE_AND_MORTAR) == 1)
         {
 
             //Get pestle/mortar and move to first open slot in inventory
             Rs2ItemModel pestleMortar = Rs2Inventory.get(ItemID.PESTLE_AND_MORTAR);
-            //int emptySlot = Rs2Inventory.getFirstEmptySlot();
+
+            //Waits in a loop until bird nests are no longer in inventory, times out after 30 seconds
+            if (Rs2Inventory.hasItem(5075) && Rs2Inventory.hasItem(233)) {
+                Rs2Inventory.combineClosest(5075, 233); // Start the grind process
+                Rs2Player.waitForAnimation(800);        // Wait for animation to begin
+
+                long startTime = System.currentTimeMillis();
+                long timeout = 30000; // 30 seconds
+
+                while (Rs2Inventory.hasItem(5075) && System.currentTimeMillis() - startTime < timeout) {
+                    sleep(500); // Check every 0.5 seconds
+                }
+
+                clampedSleepGaussian(430, 180);
+            }
+
+                //int emptySlot = Rs2Inventory.getFirstEmptySlot();
 
             /*if (pestleMortar != null && emptySlot != -1) {
                 Rs2Inventory.moveItemToSlot(pestleMortar, emptySlot);
@@ -261,6 +275,7 @@ public class FornBirdhouseRunsScript extends Script {
                 Microbot.log("Pestle and Mortar not found or no empty slot available.");
             }*/
 
+            /*
             //Random choice how to tackle inventory
             InteractOrder interactOrderLocal;
             int randomValue = Rs2Random.betweenInclusive(0, 5);
@@ -306,11 +321,10 @@ public class FornBirdhouseRunsScript extends Script {
                 if (System.currentTimeMillis()-timeValue<randomNum)
                 {
                     sleep((int) (randomNum-(System.currentTimeMillis()-timeValue)));
-                }
+                }*/
 
-                else { sleep(Rs2Random.between(14, 28)); }
+                //else { sleep(Rs2Random.between(14, 28)); }
             }
-        }
     }
 
     private int calculateSleepDuration(double multiplier) {
@@ -318,6 +332,10 @@ public class FornBirdhouseRunsScript extends Script {
         Random random = new Random();
 
         // Calculate the mean (average) of sleepMin and sleepMax, adjusted by sleepTarget
+        int sleepMin = 58;
+        int sleepMax = 1200;
+        int sleepTarget = 440;
+
         double mean = (sleepMin + sleepMax + sleepTarget) / 3.0;
 
         // Calculate the standard deviation with added noise
