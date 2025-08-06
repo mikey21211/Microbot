@@ -187,7 +187,7 @@ public class AttackNpcScript extends Script {
             {
                 Rs2Cannon.pickUpCannon();
                 Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint());
-                super.shutdown();
+                this.shutdown();
             }
 
         }, 0, 600, TimeUnit.MILLISECONDS);

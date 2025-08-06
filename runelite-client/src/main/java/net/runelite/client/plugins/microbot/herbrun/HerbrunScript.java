@@ -2,6 +2,7 @@ package net.runelite.client.plugins.microbot.herbrun;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.api.gameval.ObjectID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -150,13 +151,7 @@ public class HerbrunScript extends Script {
         if (Rs2Inventory.isFull()) {
             cleanHerbsRun();
             clampedSleepGaussian(495, 130);
-            Rs2NpcModel leprechaun = Rs2Npc.getNpc("Tool leprechaun");
-            if (leprechaun != null) {
-                Rs2ItemModel unNoted = Rs2Inventory.getUnNotedItem("Grimy", false);
-                Rs2Inventory.use(unNoted);
-                Rs2Npc.interact(leprechaun, "Talk-to");
-                Rs2Inventory.waitForInventoryChanges(10000);
-            }
+            noteCleanedHerbs();
             return false;
         }
 
@@ -301,6 +296,57 @@ public class HerbrunScript extends Script {
                 sleep(Rs2Random.between(14, 28));
             }
         }
+    }
+
+    private void noteCleanedHerbs() {
+        var ids = List.of(
+                ItemID.GUAM_LEAF,
+                ItemID.MARENTILL,
+                ItemID.TARROMIN,
+                ItemID.HARRALANDER,
+                ItemID.RANARR_WEED,
+                ItemID.TOADFLAX,
+                ItemID.IRIT_LEAF,
+                ItemID.AVANTOE,
+                ItemID.KWUARM,
+                ItemID.HUASCA,
+                ItemID.SNAPDRAGON,
+                ItemID.CADANTINE,
+                ItemID.LANTADYME,
+                ItemID.DWARF_WEED,
+                ItemID.TORSTOL
+        );
+
+        Rs2NpcModel leprechaun = Rs2Npc.getNpc("Tool leprechaun");
+
+        /*Rs2Inventory.items().forEachOrdered(item -> {
+            if (ids.contains(item.getId()) && leprechaun != null && !item.isNoted())
+            {
+                //Rs2ItemModel unNoted = Rs2Inventory.getUnNotedItem("Grimy", false);
+                //Rs2Inventory.use(unNoted);
+                Rs2Inventory.interact(item, "Use");
+                Rs2Npc.interact(leprechaun, "Talk-to");
+                Rs2Inventory.waitForInventoryChanges(10000);
+            }
+        });*/
+
+        // Step 1 & 2: Filter then collect matching items
+        List<Rs2ItemModel> matchingItems = Rs2Inventory.items()
+                .filter(item -> ids.contains(item.getId()) && leprechaun != null && !item.isNoted())
+                .collect(Collectors.toList());
+
+        // Step 3: Pick a random item if list is not empty
+        if (!matchingItems.isEmpty())
+        {
+            Random rand = new Random();
+            Rs2ItemModel randomItem = matchingItems.get(rand.nextInt(matchingItems.size()));
+
+            // Step 4: Use the randomly selected item
+            Rs2Inventory.interact(randomItem, "Use");
+            Rs2Npc.interact(leprechaun, "Talk-to");
+            Rs2Inventory.waitForInventoryChanges(10000);
+        }
+
     }
 
     private int calculateSleepDuration(double multiplier) {

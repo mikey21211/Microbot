@@ -17,6 +17,12 @@ import net.runelite.client.plugins.microbot.util.inventory.Rs2ItemModel;
 import net.runelite.client.plugins.microbot.util.math.Rs2Random;
 import net.runelite.client.plugins.microbot.util.player.Rs2Player;
 import net.runelite.client.plugins.microbot.util.walker.Rs2Walker;
+import net.runelite.client.plugins.microbot.util.widget.Rs2Widget;
+import net.runelite.client.plugins.microbot.util.tabs.Rs2Tab;
+
+import net.runelite.api.widgets.Widget;
+import net.runelite.client.plugins.microbot.Microbot;
+import net.runelite.client.plugins.microbot.util.widget.Rs2Widget;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -66,7 +72,6 @@ public class TestScript extends Script {
 
                 Microbot.log("Hello world");
                 //cleanHerbsRun();
-                cannonPick();
 
                 long endTime = System.currentTimeMillis();
                 long totalTime = endTime - startTime;
@@ -160,6 +165,7 @@ public class TestScript extends Script {
         Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint());
         this.shutdown();
     }
+
 
     @Override
     public void shutdown() {
