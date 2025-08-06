@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
                         }
                     }
 
-                    int npcAnimation = Rs2Reflection.getAnimation(jadNpc);
+                    int npcAnimation = jadNpc.getAnimation();
                     handleJadPrayer(npcAnimation);
                     if (config.shouldAttackHealers()) {
                         handleHealerInteraction();
