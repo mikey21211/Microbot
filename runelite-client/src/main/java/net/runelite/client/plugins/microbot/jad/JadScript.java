@@ -114,7 +114,7 @@ public class JadScript extends Script {
                     if (jadNpc == null) continue;
 
                     int npcIndex = jadNpc.getIndex();
-                    int animationId = Rs2Reflection.getAnimation(jadNpc);
+                    int animationId = jadNpc.getAnimation();
 
                     System.out.println("[JadScript] Jad NPC index: " + npcIndex + ", Animation ID: " + animationId);
 

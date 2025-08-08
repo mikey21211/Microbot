@@ -92,6 +92,7 @@ public class HerbrunScript extends Script {
             if (currentPatch == null) getNextPatch();
             if (currentPatch == null) {
                 HerbrunPlugin.status = "Finishing up";
+                cleanHerbsRun(); //Clean remaining herbs before banking
                 if (config.goToBank()) {
                     Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint());
                     if (!Rs2Bank.isOpen()) Rs2Bank.openBank();
