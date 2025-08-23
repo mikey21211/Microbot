@@ -32,6 +32,7 @@ import net.runelite.client.plugins.microbot.util.prayer.Rs2Prayer;
 import net.runelite.client.plugins.microbot.util.prayer.Rs2PrayerEnum;
 import net.runelite.client.plugins.microbot.util.slayer.Rs2Slayer;
 import net.runelite.client.plugins.microbot.util.walker.Rs2Walker;
+import net.runelite.client.plugins.microbot.util.walker.enums.SlayerMasters;
 import org.slf4j.event.Level;
 
 import java.util.ArrayList;
@@ -182,9 +183,10 @@ public class AttackNpcScript extends Script {
 
             if(Microbot.getClient().getVarpValue(VarPlayerID.SLAYER_COUNT) < 1)
             {
+                Microbot.stopPlugin(AIOFighterPlugin.class);
                 Rs2Cannon.pickUpCannon();
-                Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint());
-                this.shutdown();
+                Rs2Walker.walkTo(SlayerMasters.NIEVE.getWorldPoint());
+                Rs2Prayer.disableAllPrayers();
             }
 
         }, 0, 600, TimeUnit.MILLISECONDS);

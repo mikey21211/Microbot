@@ -10,8 +10,7 @@ import net.runelite.client.plugins.microbot.util.inventory.Rs2Inventory;
 import net.runelite.client.plugins.microbot.util.math.Rs2Random;
 import net.runelite.client.plugins.microbot.util.player.Rs2Player;
 
-import static net.runelite.client.plugins.microbot.util.Global.sleep;
-import static net.runelite.client.plugins.microbot.util.Global.sleepUntil;
+import static net.runelite.client.plugins.microbot.util.Global.*;
 
 public class Rs2Cannon {
 
@@ -82,9 +81,19 @@ public class Rs2Cannon {
 
         // Wait until cannon is gone (max ~5 seconds)
         int attempts = 0;
-        while (isCannonNearby() && attempts++ < 10) {
-            sleep(1000);
+        while (!hasCannonInInventory() && attempts++ < 10) {
+            clampedSleepGaussian(1000,150);
+            Rs2GameObject.interact(cannon, "Pick-up");
         }
+    }
+
+    //Do we already have the parts? If yes, don’t attempt to pick up anything.
+    private static boolean hasCannonInInventory() {
+        // Replace with the item ids you use for the four cannon parts
+        return Rs2Inventory.contains("Cannon base") &&
+                Rs2Inventory.contains("Cannon stand") &&
+                Rs2Inventory.contains("Cannon barrels") &&
+                Rs2Inventory.contains("Cannon furnace");
     }
 
     private static boolean isCannonNearby() {

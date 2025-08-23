@@ -8,6 +8,7 @@ import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.worldmap.WorldMap;
@@ -37,8 +38,7 @@ import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -100,6 +100,15 @@ public class AIOFighterPlugin extends Plugin {
 
     protected ScheduledExecutorService initializerExecutor = Executors.newSingleThreadScheduledExecutor();
 
+    // how long (in ticks) without movement before we prune an entry
+    private static final int STALE_TICKS = 6;
+    // Gate state: when true, the next cannonball movement will trigger once and lock the gate
+    private boolean armed = true;
+    // Last tick we saw ANY cannonball movement
+    private int lastSeenTick = -1;
+    // Optional: debugging
+    private static final boolean DEBUG = false;
+
     @Provides
     public AIOFighterConfig provideConfig(ConfigManager configManager) {
         return configManager.getConfig(AIOFighterConfig.class);
@@ -107,6 +116,7 @@ public class AIOFighterPlugin extends Plugin {
 
     @Override
     protected void startUp() throws AWTException {
+        Microbot.enableAutoRunOn = false;
 		Microbot.pauseAllScripts.compareAndSet(true, false);
         //initialize any data on startup
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
@@ -418,6 +428,15 @@ public class AIOFighterPlugin extends Plugin {
             //Projectiles that have targetActor null are targeting a WorldPoint and are dodgeable.
             dodgeScript.projectiles.add(event.getProjectile());
         }
+
+        /*
+         * Listens for cannonball firing (ID 53)
+         */
+        if(Microbot.getClient().getVarbitValue(Varbits.MULTICOMBAT_AREA) == 0)
+        {
+            if (projectile.getId() != cannonScript.getCannonballID()) return;
+            cannonScript.onProjectileFired();
+        }
     }
 
     @Subscribe
@@ -429,6 +448,20 @@ public class AIOFighterPlugin extends Plugin {
         } catch (Exception e) {
             log.info("AIO Fighter Plugin onGameTick Error: " + e.getMessage());
         }
+
+        /*
+        //Logic for cannon firing
+        int now = Microbot.getClient().getTickCount();
+        // If we haven't seen movement for a few ticks, re-arm the gate
+        if (!armed && lastSeenTick >= 0 && (now - lastSeenTick) >= STALE_TICKS) {
+            armed = true;
+            if (DEBUG) {
+                Microbot.log(String.format(
+                        "[CannonGate] Re-armed after quiet gap (lastSeen=%d, now=%d, Δ=%d)",
+                        lastSeenTick, now, now - lastSeenTick
+                ));
+            }
+        }*/
     }
 
     @Subscribe

@@ -43,7 +43,7 @@ public class Global {
 
     public static void clampedSleepGaussian(int clampedMean, int clampedDeviation) {
 
-        int min = Math.max(48, clampedMean - 3 * clampedDeviation); // Clamp lower bound (e.g. 110)
+        int min = Math.max(124, clampedMean - 3 * clampedDeviation); // Clamp lower bound (e.g. 110)
         int max = clampedMean + 3 * clampedDeviation; // Clamp upper bound (e.g. 650)
 
         int sleepTime = Rs2Random.randomGaussian(clampedMean, clampedDeviation);

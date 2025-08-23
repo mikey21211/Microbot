@@ -129,7 +129,7 @@ public class AttackTimerMetronomePlugin extends Plugin
     private boolean cachedIsChargedStaff = false;
     private int lastCheckedWeaponId = -1;
 
-    private static final int OUT_OF_COMBAT_TIMEOUT_TICKS = 150; // ~3000ms (150 game ticks)
+    private static final int OUT_OF_COMBAT_TIMEOUT_TICKS = 5; // ~3000ms (150 game ticks)
     private int outOfCombatTicks = 0; // Counter for time since last attack
 
     @Subscribe

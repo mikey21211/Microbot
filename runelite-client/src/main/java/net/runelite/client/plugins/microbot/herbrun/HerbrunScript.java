@@ -12,6 +12,8 @@ import net.runelite.client.plugins.microbot.questhelper.helpers.mischelpers.farm
 import net.runelite.client.plugins.microbot.questhelper.helpers.mischelpers.farmruns.FarmingPatch;
 import net.runelite.client.plugins.microbot.questhelper.helpers.mischelpers.farmruns.FarmingWorld;
 import net.runelite.client.plugins.microbot.util.Rs2InventorySetup;
+import net.runelite.client.plugins.microbot.util.antiban.Rs2Antiban;
+import net.runelite.client.plugins.microbot.util.antiban.enums.ActivityIntensity;
 import net.runelite.client.plugins.microbot.util.bank.Rs2Bank;
 import net.runelite.client.plugins.microbot.util.gameobject.Rs2GameObject;
 import net.runelite.client.plugins.microbot.util.inventory.InteractOrder;
@@ -63,6 +65,8 @@ public class HerbrunScript extends Script {
         mainScheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(() -> {
             if (!Microbot.isLoggedIn()) return;
             if (!super.run()) return;
+            Rs2Antiban.setActivityIntensity(ActivityIntensity.LOW);
+
             if (!initialized) {
                 initialized = true;
                 HerbrunPlugin.status = "Gearing up";
@@ -260,6 +264,9 @@ public class HerbrunScript extends Script {
     }
 
     private void cleanHerbsRun() {
+        //We click fast to clean
+        Rs2Antiban.setActivityIntensity(ActivityIntensity.EXTREME);
+
         //Random choice how to tackle inventory
         InteractOrder interactOrderLocal;
         int randomValue = Rs2Random.betweenInclusive(0, 5);
@@ -282,6 +289,7 @@ public class HerbrunScript extends Script {
 
         if (herbStack.isEmpty()) {
             Microbot.log("No herbs found in inventory.");
+            Rs2Antiban.setActivityIntensity(ActivityIntensity.LOW); //Reset intensity
             return;
         }
 
@@ -297,6 +305,8 @@ public class HerbrunScript extends Script {
                 sleep(Rs2Random.between(14, 28));
             }
         }
+
+        Rs2Antiban.setActivityIntensity(ActivityIntensity.LOW);  //Reset intensity
     }
 
     private void noteCleanedHerbs() {
