@@ -218,6 +218,7 @@ public class CannonScript extends Script {
             }
         }
 
+
         if (lastCircleTarget == null || Rs2Player.getWorldLocation().equals(lastCircleTarget)) //Advance to next point on list of points circling cannon
         {
             circleStep = (circleStep + 1) % circlePoints.size();
