@@ -46,6 +46,17 @@ public interface HerbrunConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "enableAllotments",
+            name = "Allotment Farming",
+            description = "Choose to enable the farming of allotment patches during herb run.",
+            position = 3,
+            section = settingsSection
+    )
+    default boolean enableAllotments() {
+        return true;
+    }
+
+    @ConfigItem(
             keyName = "enableTrollheim",
             name = "Enable Trollheim Patch",
             description = "Enable Trollheim patch in herb run",

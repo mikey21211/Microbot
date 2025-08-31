@@ -46,6 +46,7 @@ public class HerbrunScript extends Script {
     private final HerbrunPlugin plugin;
     private final HerbrunConfig config;
     private HerbPatch currentPatch;
+
     @Inject
     ClientThread clientThread;
     private boolean initialized = false;
@@ -128,6 +129,17 @@ public class HerbrunScript extends Script {
         herbPatches.clear();
         clientThread.runOnClientThreadOptional(() -> {
             for (FarmingPatch patch : farmingWorld.getTabs().get(Tab.HERB)) {
+                HerbPatch _patch = new HerbPatch(patch, config, farmingHandler);
+                if (_patch.getPrediction() != CropState.GROWING && _patch.isEnabled()) herbPatches.add(_patch);
+            }
+            return true;
+        });
+    }
+
+    private void populateAllotmentPatches() {
+        this.farmingHandler = new FarmingHandler(Microbot.getClient(), configManager);
+        clientThread.runOnClientThreadOptional(() -> {
+            for (FarmingPatch patch : farmingWorld.getTabs().get(Tab.ALLOTMENT)) {
                 HerbPatch _patch = new HerbPatch(patch, config, farmingHandler);
                 if (_patch.getPrediction() != CropState.GROWING && _patch.isEnabled()) herbPatches.add(_patch);
             }

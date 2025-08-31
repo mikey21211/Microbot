@@ -3,7 +3,6 @@ package net.runelite.client.plugins.microbot.aiofighter.cannon;
 import lombok.Getter;
 import net.runelite.api.ObjectID;
 import net.runelite.api.TileObject;
-import net.runelite.api.World;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.client.plugins.microbot.Microbot;
@@ -59,8 +58,13 @@ public class CannonScript extends Script {
                 // Refill cannon if needed
                 Rs2Cannon.refill();
 
+
                 // Run main logic for checking cannon state and circling
-                checkCannonAndCircle();
+                if(!Rs2Player.isInMulti())
+                {
+                    checkCannonAndCircle();
+                }
+
 
             } catch(Exception ex) {
                 Microbot.logStackTrace(this.getClass().getSimpleName(), ex);
@@ -194,7 +198,7 @@ public class CannonScript extends Script {
             WorldPoint me = Rs2Player.getWorldLocation();
             int best = Integer.MAX_VALUE;
             WorldPoint fallback = null;
-            int bestIdx = -1;
+            int bestIndex = -1;
 
             for (int i = 0; i < circlePoints.size(); i++) {
                 WorldPoint p = circlePoints.get(i);
@@ -203,23 +207,29 @@ public class CannonScript extends Script {
                 if (d < best) {
                     best = d;
                     fallback = p;
-                    bestIdx = i;
+                    bestIndex = i;
                 }
             }
 
             if (fallback != null) {
                 lastCircleTarget = fallback;
-                circleStep = bestIdx;
+                circleStep = bestIndex;
                 Microbot.log("First time circling. Closest reachable point chosen: "
                         + fallback + " (step=" + circleStep + ")");
             } else {
                 Microbot.log("No reachable circle points at all. Skipping this tick.");
                 return;
             }
+
+            int targetDistance = cannonCenter.distanceTo(lastCircleTarget);
+            Microbot.log("First time that cannon is not firing on this monster, moving to circle point " + lastCircleTarget
+                    + " (distance: " + targetDistance + ", step " + circleStep + ")");
+            Rs2Walker.walkFastCanvas(lastCircleTarget);
+
         }
 
 
-        if (lastCircleTarget == null || Rs2Player.getWorldLocation().equals(lastCircleTarget)) //Advance to next point on list of points circling cannon
+        if (Rs2Player.getWorldLocation().equals(lastCircleTarget)) //Advance to next point on list of points circling cannon
         {
             circleStep = (circleStep + 1) % circlePoints.size();
             lastCircleTarget = circlePoints.get(circleStep);
@@ -242,7 +252,7 @@ public class CannonScript extends Script {
                 }
                 if (fallback != null) {
                     lastCircleTarget = fallback;
-                    Microbot.log("Fallback reachable circle point: "
+                    Microbot.log("New location not working. Fallback reachable circle point: "
                             + fallback + " (step=" + circleStep + ")");
                 } else {
                     Microbot.log("No reachable circle points; skipping this tick.");
@@ -261,6 +271,7 @@ public class CannonScript extends Script {
             currentSlayerCount = Microbot.getClient().getVarpValue(VarPlayerID.SLAYER_COUNT);
             circleStep = Rs2Random.between(0, circlePoints.size() - 1);//Choose random starting point to circle from
             lastCircleTarget = null; //Reset
+            Microbot.log("lastCircleTarget reset to null.");
         }
 
     }

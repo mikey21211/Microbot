@@ -430,11 +430,10 @@ public class AIOFighterPlugin extends Plugin {
         }
 
         /*
-         * Listens for cannonball firing (ID 53)
+         * Listens for cannonball firing (ID 53), but ensure we are in multi-combat zone to avoid spam.
          */
-        if(Microbot.getClient().getVarbitValue(Varbits.MULTICOMBAT_AREA) == 0)
+        if(!Rs2Player.isInMulti() && projectile.getId() == cannonScript.getCannonballID())
         {
-            if (projectile.getId() != cannonScript.getCannonballID()) return;
             cannonScript.onProjectileFired();
         }
     }
@@ -448,20 +447,6 @@ public class AIOFighterPlugin extends Plugin {
         } catch (Exception e) {
             log.info("AIO Fighter Plugin onGameTick Error: " + e.getMessage());
         }
-
-        /*
-        //Logic for cannon firing
-        int now = Microbot.getClient().getTickCount();
-        // If we haven't seen movement for a few ticks, re-arm the gate
-        if (!armed && lastSeenTick >= 0 && (now - lastSeenTick) >= STALE_TICKS) {
-            armed = true;
-            if (DEBUG) {
-                Microbot.log(String.format(
-                        "[CannonGate] Re-armed after quiet gap (lastSeen=%d, now=%d, Δ=%d)",
-                        lastSeenTick, now, now - lastSeenTick
-                ));
-            }
-        }*/
     }
 
     @Subscribe
