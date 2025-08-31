@@ -14,11 +14,11 @@ public class ArdougneCourse implements AgilityCourseHandler
 		return new WorldPoint(2673, 3298, 0);
 	}
 
-	@Override
-	public WorldPoint getCenterPoint()
-	{
-		return new WorldPoint(2661, 3305, 0);
-	}
+//	@Override
+//	public WorldPoint getCenterPoint()
+//	{
+//		return new WorldPoint(2661, 3305, 0);
+//	}
 
 	@Override
 	public List<AgilityObstacleModel> getObstacles()

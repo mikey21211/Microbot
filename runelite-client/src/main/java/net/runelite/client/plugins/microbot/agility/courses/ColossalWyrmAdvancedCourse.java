@@ -18,11 +18,11 @@ public class ColossalWyrmAdvancedCourse implements AgilityCourseHandler
 		return new WorldPoint(1652, 2931, 0);
 	}
 
-	@Override
-	public WorldPoint getCenterPoint()
-	{
-		return new WorldPoint(1639, 2921, 0);
-	}
+//	@Override
+//	public WorldPoint getCenterPoint()
+//	{
+//		return new WorldPoint(1639, 2921, 0);
+//	}
 
 	@Override
 	public List<AgilityObstacleModel> getObstacles()

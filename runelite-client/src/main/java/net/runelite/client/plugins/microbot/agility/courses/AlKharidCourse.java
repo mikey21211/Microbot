@@ -13,11 +13,11 @@ public class AlKharidCourse implements AgilityCourseHandler
 		return new WorldPoint(3273, 3195, 0);
 	}
 
-	@Override
-	public WorldPoint getCenterPoint()
-	{
-		return new WorldPoint(3291, 3180, 0);
-	}
+//	@Override
+//	public WorldPoint getCenterPoint()
+//	{
+//		return new WorldPoint(3291, 3180, 0);
+//	}
 
 	@Override
 	public List<AgilityObstacleModel> getObstacles()

@@ -14,11 +14,11 @@ public class ApeAtollCourse implements AgilityCourseHandler
 		return new WorldPoint(2754, 2742, 0);
 	}
 
-	@Override
-	public WorldPoint getCenterPoint()
-	{
-		return new WorldPoint(2760, 2738, 0);
-	}
+//	@Override
+//	public WorldPoint getCenterPoint()
+//	{
+//		return new WorldPoint(2760, 2738, 0);
+//	}
 
 	@Override
 	public List<AgilityObstacleModel> getObstacles()

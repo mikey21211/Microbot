@@ -44,6 +44,8 @@ public class TestScript extends Script {
 
     boolean otherCameraChangedFlag;
 
+    WorldPoint todtCenter = new WorldPoint(1639, 3993, 0);
+
     public boolean run(TestConfig config) {
         Microbot.enableAutoRunOn = false;
         otherCameraChangedFlag = false;
@@ -55,7 +57,7 @@ public class TestScript extends Script {
 
                 //Change rotation based on dice roll
                 if(Rs2Random.dicePercentage(0.64)) {
-                    //rotateToTargetAngleWithJitter(courseCenter);
+                    rotateToTargetAngleWithJitter(todtCenter);
                 }
                 //Change the screen height based on random chance
                 if(Rs2Random.dicePercentage(0.48)) {
@@ -66,8 +68,6 @@ public class TestScript extends Script {
                 if(Rs2Random.dicePercentage(0.27)) {
                     randomCameraZoom();
                 }
-
-                this.shutdown();
 
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());

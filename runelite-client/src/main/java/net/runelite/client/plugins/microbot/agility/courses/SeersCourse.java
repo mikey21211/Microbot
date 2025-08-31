@@ -19,11 +19,11 @@ public class SeersCourse implements AgilityCourseHandler
 		return new WorldPoint(2729, 3486, 0);
 	}
 
-	@Override //NEEDS FIXING **************************************
-	public WorldPoint getCenterPoint()
-	{
-		return new WorldPoint(3291, 3180, 0);
-	}
+//	@Override //NEEDS FIXING **************************************
+//	public WorldPoint getCenterPoint()
+//	{
+//		return new WorldPoint(3291, 3180, 0);
+//	}
 
 	@Override
 	public List<AgilityObstacleModel> getObstacles()

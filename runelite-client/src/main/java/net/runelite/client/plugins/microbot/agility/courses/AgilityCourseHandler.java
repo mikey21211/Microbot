@@ -21,7 +21,7 @@ public interface AgilityCourseHandler
 {
 
 	WorldPoint getStartPoint();
-	WorldPoint getCenterPoint();
+	//WorldPoint getCenterPoint();
 
 	List<AgilityObstacleModel> getObstacles();
 

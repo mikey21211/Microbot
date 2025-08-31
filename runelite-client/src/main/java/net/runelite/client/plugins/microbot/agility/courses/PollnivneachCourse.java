@@ -14,11 +14,11 @@ public class PollnivneachCourse implements AgilityCourseHandler
 		return new WorldPoint(3351, 2961, 0);
 	}
 
-	@Override
-	public WorldPoint getCenterPoint()
-	{
-		return new WorldPoint(3351, 2980, 0);
-	}
+//	@Override
+//	public WorldPoint getCenterPoint()
+//	{
+//		return new WorldPoint(3351, 2980, 0);
+//	}
 
 	@Override
 	public List<AgilityObstacleModel> getObstacles()
